@@ -25,6 +25,9 @@ model Category {
   id        String     @id @default(uuid())
   name      String     @unique @db.VarChar(100)
   medicines Medicine[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Medicine {
@@ -73,7 +76,7 @@ model OrderItem {
   order      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
   medicineId String
   medicine   Medicine @relation(fields: [medicineId], references: [id])
-  
+
   @@map("order_items")
 }
 
