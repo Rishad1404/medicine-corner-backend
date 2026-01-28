@@ -66,7 +66,22 @@ const getAllMedicines = async ({
       [sortBy]: sortOrder,
     },
   });
-  return result;
+
+  const total=await prisma.medicine.count({
+    where:{
+      AND:andConditions
+    }
+  })
+
+  return {
+    data:result,
+    pagination:{
+      total,
+      page,
+      limit,
+      totalPages:Math.ceil(total/limit)
+    }
+  };
 };
 
 const getSingleMedicine = async (id: string) => {
