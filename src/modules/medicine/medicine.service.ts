@@ -1,33 +1,65 @@
-import { prisma } from "../../lib/prisma"
+import { MedicineWhereInput } from "../../../generated/prisma/models";
+import { prisma } from "../../lib/prisma";
 
+const createMedicine = async (data: any, userId: string) => {
+  const result = await prisma.medicine.create({
+    data: {
+      ...data,
+      sellerId: userId,
+    },
+  });
+  return result;
+};
 
-const createMedicine=async(data:any,userId:string)=>{
-    const result=await prisma.medicine.create({
-        data:{
-          ...data,
-          sellerId:userId
-        }
-    })
-    return result;
-}
+const getAllMedicines = async ({ search,sortBy,sortOrder }: { search?: string | undefined,sortBy: string ,sortOrder:string}) => {
+  const andConditions:MedicineWhereInput[] = [];
 
-const getAllMedicines = async () => {
+  if (search) {
+    andConditions.push({
+      OR: [
+        {
+          name: {
+            contains: search as string,
+            mode: "insensitive",
+          },
+        },
+        {
+          description: {
+            contains: search as string,
+            mode: "insensitive",
+          },
+        },
+        {
+          category: {
+            name: {
+              contains: search as string,
+              mode: "insensitive",
+            },
+          },
+        },
+      ],
+    });
+  }
+
   const result = await prisma.medicine.findMany({
-    include: {
-      category: true 
+    where: {
+      AND:andConditions
+    },
+    orderBy:{
+      [sortBy]:sortOrder
     }
   });
   return result;
 };
 
-const getSingleMedicine= async (id: string) => {
+const getSingleMedicine = async (id: string) => {
   const result = await prisma.medicine.findUnique({
     where: {
-      id: id
+      id: id,
     },
     include: {
-      category: true
-    }
+      category: true,
+    },
   });
   return result;
 };
@@ -40,17 +72,17 @@ const updateMedicine = async (id: string, data: any) => {
   return result;
 };
 
-const deleteMedicine= async (id: string) => {
+const deleteMedicine = async (id: string) => {
   const result = await prisma.medicine.delete({
     where: { id },
   });
   return result;
 };
 
-export const medicineService={
-    createMedicine,
-    getAllMedicines,
-    getSingleMedicine,
-    updateMedicine,
-    deleteMedicine
-}
+export const medicineService = {
+  createMedicine,
+  getAllMedicines,
+  getSingleMedicine,
+  updateMedicine,
+  deleteMedicine,
+};

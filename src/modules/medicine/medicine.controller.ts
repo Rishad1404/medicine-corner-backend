@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import { medicineService } from "./medicine.service";
 
+
+// Create medicine-------------------------------------------------------------------------
 const createMedicine = async (req: Request, res: Response) => {
   try {
     const user=req.user;
@@ -23,9 +25,16 @@ const createMedicine = async (req: Request, res: Response) => {
   }
 };
 
+// Get all medicines------------------------------------------------------------------------
 const getAllMedicines = async (req: Request, res: Response) => {
   try {
-    const result = await medicineService.getAllMedicines();
+
+    const {search,sortBy,sortOrder}=req.query;
+    const searchString=typeof search === 'string' ? search : undefined;
+    const sortByString=typeof sortBy === 'string' ? sortBy :'createdAt';
+    const sortOrderString=typeof sortOrder ==='string'? sortOrder : 'desc'
+
+    const result = await medicineService.getAllMedicines({search:searchString, sortBy:sortByString, sortOrder: sortOrderString});
     res.status(200).json({
       success: true,
       message: "Medicines fetched successfully",

@@ -9,7 +9,8 @@ import { medicineRouter } from "./modules/medicine/medicine.router";
 const app:Application=express();
 
 app.use(cors({
-    origin:process.env.APP_URL || "http://localhost:4000"
+    origin:process.env.APP_URL || "http://localhost:4000",   //Client site 
+    credentials:true
 }))
 
 app.all("/api/auth/*splat",toNodeHandler(auth))
