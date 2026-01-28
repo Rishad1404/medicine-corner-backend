@@ -47,6 +47,7 @@ model User {
   updatedAt     DateTime  @updatedAt
   sessions      Session[]
   accounts      Account[]
+  reviews Review[]
 
   role   String?    @default("CUSTOMER")
   phone  String?
@@ -112,6 +113,7 @@ model Review {
   rating     Int      @default(5)
   comment    String?  @db.Text
   customerId String
+  customer  User @relation(fields: [customerId],references: [id],onDelete:Cascade)
   medicineId String
   medicine   Medicine @relation(fields: [medicineId], references: [id], onDelete: Cascade)
   createdAt  DateTime @default(now())
