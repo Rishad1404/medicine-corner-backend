@@ -53,8 +53,24 @@ const getStats = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
+const deleteUser = async (req: Request, res: Response,next:NextFunction) => {
+  try {
+    const { id } = req.params;
+    await adminService.deleteUser(id as string);
+
+    res.status(200).json({
+      success: true,
+      message: "User Deleted successfully",
+      data: null,
+    });
+  } catch (error) {
+    next()
+  }
+};
+
 export const adminController = {
   getAllUsers,
   updateUserStatus,
   getStats,
+  deleteUser
 };

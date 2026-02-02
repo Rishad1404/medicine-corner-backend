@@ -9,6 +9,7 @@ model Medicine {
   categoryId String
   category   Category @relation(fields: [categoryId], references: [id])
   image      String?
+  expiryDate DateTime?
 
   sellerId String
 

@@ -15,8 +15,9 @@ import { notFound } from "./middlewares/notFound";
 const app:Application=express();
 
 app.use(cors({
-    origin:process.env.APP_URL || "http://localhost:4000",   //Client site 
-    credentials:true
+    origin:process.env.APP_URL || "http://localhost:4000",  
+    credentials:true,
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"]
 }))
 
 app.all("/api/auth/*splat",toNodeHandler(auth))

@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.post("/",auth(UserRole.ADMIN), categoryController.createCategory);
 router.get("/", categoryController.getAllCategories);
-router.get("/:id",auth(UserRole.ADMIN), categoryController.getSingleCategory);
+router.get("/:id", categoryController.getSingleCategory);
 router.patch("/:id",auth(UserRole.ADMIN), categoryController.updateCategory);
 router.delete("/:id",auth(UserRole.ADMIN), categoryController.deleteCategory);
 

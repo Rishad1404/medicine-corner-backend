@@ -13,6 +13,8 @@ model Order {
   shippingAddress String      @db.Text
 
   customerId String
+  customer        User        @relation(fields: [customerId], references: [id])
+
   items      OrderItem[]
 
   createdAt DateTime @default(now())

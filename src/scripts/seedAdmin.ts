@@ -1,3 +1,4 @@
+import { string } from "better-auth";
 import { prisma } from "../lib/prisma";
 import { UserRole } from "../middlewares/auth";
 
@@ -21,12 +22,12 @@ async function seedAdmin() {
     }
 
     const registerAdmin = await fetch(
-      "http://localhost:3000/api/auth/sign-up/email",
+      "http://localhost:5000/api/auth/sign-up/email",
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Origin:"http://localhost:4000"
+          Origin:"http://localhost:3000"
         },
         body: JSON.stringify(adminData),
       },

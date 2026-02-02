@@ -17,6 +17,7 @@ export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
+  baseURL: process.env.BETTER_AUTH_URL || "http://localhost:5000",
   trustedOrigins: [process.env.APP_URL!],
   user: {
     additionalFields: {
@@ -40,17 +41,25 @@ export const auth = betterAuth({
     // autoSignIn: false,
     // requireEmailVerification: true,
   },
-//   emailVerification: {
-//     sendVerificationEmail: async ({ user, url, token }, request) => {
-//       const info = await transporter.sendMail({
-//         from: '"Medicine Corner" <medicinecorner@gmail.com>',
-//         to: "akbarali14041@gmail.com",
-//         subject: "Hello ✔",
-//         text: "Hello world?", // Plain-text version of the message
-//         html: "<b>Hello world?</b>", // HTML version of the message
-//       });
+  //   emailVerification: {
+  //     sendVerificationEmail: async ({ user, url, token }, request) => {
+  //       const info = await transporter.sendMail({
+  //         from: '"Medicine Corner" <medicinecorner@gmail.com>',
+  //         to: "akbarali14041@gmail.com",
+  //         subject: "Hello ✔",
+  //         text: "Hello world?", // Plain-text version of the message
+  //         html: "<b>Hello world?</b>", // HTML version of the message
+  //       });
 
-//       console.log("Message sent:", info.messageId);
-//     },
-//   },
+  //       console.log("Message sent:", info.messageId);
+  //     }, 
+  //   },
+
+  socialProviders: {
+    google: {
+      prompt: "select_account",
+      clientId: process.env.GOOGLE_CLIENT_ID as string,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+    },
+  },
 });

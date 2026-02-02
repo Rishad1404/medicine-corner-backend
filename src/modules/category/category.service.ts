@@ -8,10 +8,24 @@ const createCategory=async(data:Omit <Category, "id" | "createdAt" | "updatedAt"
     return result;
 }
 
-const getAllCategories=async()=>{
-    const result=await prisma.category.findMany();
-    return result
-}
+const getAllCategories = async () => {
+  const result = await prisma.category.findMany({
+    orderBy: {
+      name: "asc",
+    },
+    select: {
+      id: true,
+      name: true,
+      image: true, 
+      _count: {
+        select: {
+          medicines: true, 
+        },
+      },
+    },
+  });
+  return result;
+};
 
 const getSingleCategory = async (id: string) => {
   const result = await prisma.category.findUnique({

@@ -10,44 +10,54 @@ const getAllUsers = async () => {
       email: true,
       role: true,
       createdAt: true,
-      status:true
-    }
+      status: true,
+    },
   });
   return result;
 };
 
-const updateUserStatus= async (userId: string, payload: { role?: UserRole; status?: UserStatus }) => {
+const updateUserStatus = async (
+  userId: string,
+  payload: { role?: UserRole; status?: UserStatus },
+) => {
   const result = await prisma.user.update({
     where: { id: userId },
-    data: payload 
+    data: payload,
   });
   return result;
 };
 
-const getDashboardStats=async()=>{
-  const totalUsers=await prisma.user.count();
+const getDashboardStats = async () => {
+  const totalUsers = await prisma.user.count();
   const totalMedicines = await prisma.medicine.count();
   const totalOrders = await prisma.order.count();
 
-  const revenueData=await prisma.order.aggregate({
-    _sum:{
-      totalAmount:true
-    }
-  })
+  const revenueData = await prisma.order.aggregate({
+    _sum: {
+      totalAmount: true,
+    },
+  });
 
-  const totalRevenue=revenueData._sum.totalAmount || 0 ;
+  const totalRevenue = revenueData._sum.totalAmount || 0;
 
   return {
     totalUsers,
     totalMedicines,
     totalOrders,
-    totalRevenue
+    totalRevenue,
   };
 };
 
-export const adminService={
-    getAllUsers,
-    updateUserStatus,
-    getDashboardStats
+const deleteUser = async (id: string) => {
+  const result = await prisma.user.delete({
+    where: { id },
+  });
+  return result;
+};
 
-}
+export const adminService = {
+  getAllUsers,
+  updateUserStatus,
+  getDashboardStats,
+  deleteUser,
+};
