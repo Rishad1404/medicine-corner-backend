@@ -1,12 +1,12 @@
 model Review {
   id         String   @id @default(uuid())
   rating     Int      @default(5)
-  comment    String?  @db.Text
+  comment    String?
   customerId String
-  customer  User @relation(fields: [customerId],references: [id],onDelete:Cascade)
   medicineId String
-  medicine   Medicine @relation(fields: [medicineId], references: [id], onDelete: Cascade)
   createdAt  DateTime @default(now())
+  customer   User     @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  medicine   Medicine @relation(fields: [medicineId], references: [id], onDelete: Cascade)
 
   @@map("reviews")
 }

@@ -36,7 +36,7 @@ const getAllMedicines = async (
   next: NextFunction,
 ) => {
   try {
-    const { search } = req.query;
+    const { search, category, minPrice, maxPrice, manufacturer } = req.query;
     const searchString = typeof search === "string" ? search : undefined;
 
     const { sortBy, sortOrder, page, limit, skip } = paginationSortingHelper(
@@ -45,6 +45,10 @@ const getAllMedicines = async (
 
     const result = await medicineService.getAllMedicines({
       search: searchString,
+      category: typeof category === "string" ? category : undefined,
+      minPrice: typeof minPrice === "string" ? Number(minPrice) : undefined,
+      maxPrice: typeof maxPrice === "string" ? Number(maxPrice) : undefined,
+      manufacturer: typeof manufacturer === "string" ? manufacturer : undefined,
       sortBy,
       sortOrder,
       page,

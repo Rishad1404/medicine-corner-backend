@@ -1,15 +1,29 @@
-import { string } from "better-auth";
+import "dotenv/config";
+import dotenv from "dotenv";
+import path from "path";
 import { prisma } from "../lib/prisma";
 import { UserRole } from "../middlewares/auth";
+
+dotenv.config({
+  path: path.resolve(process.cwd(), ".env.local"),
+  override: true,
+});
 
 async function seedAdmin() {
   try {
     const adminData = {
-      name: process.env.ADMIN_NAME,
+      name: process.env.ADMIN_NAME || "Admin",
       email: process.env.ADMIN_EMAIL,
       role: UserRole.ADMIN,
       password: process.env.ADMIN_PASSWORD,
     };
+
+    if (!adminData.email || !adminData.password) {
+      console.error(
+        "❌ ERROR: ADMIN_EMAIL or ADMIN_PASSWORD is missing in your .env or .env.local file.",
+      );
+      return;
+    }
 
     const existingUser = await prisma.user.findUnique({
       where: {
@@ -18,36 +32,43 @@ async function seedAdmin() {
     });
 
     if (existingUser) {
-      throw new Error("User already exists!!");
+      console.log("ℹ️ Admin already exists in the database. Skipping seed.");
+      return;
     }
 
-    const registerAdmin = await fetch(
-      "http://localhost:5000/api/auth/sign-up/email",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Origin:"http://localhost:3000"
-        },
-        body: JSON.stringify(adminData),
+    console.log(`🚀 Seeding admin: ${adminData.email}...`);
+
+    const baseUrl = process.env.BETTER_AUTH_URL || "http://localhost:5000";
+    const signUpUrl = `${baseUrl}/api/auth/sign-up/email`;
+
+    const registerAdmin = await fetch(signUpUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Origin: process.env.APP_URL || "http://localhost:3000",
       },
-    );
+      body: JSON.stringify(adminData),
+    });
 
-    if(registerAdmin.ok){
-        await prisma.user.update({
-            where:{
-                email:adminData.email
-            },
-            data:{
-                emailVerified:true
-            }
-        })
+    if (registerAdmin.ok) {
+      await prisma.user.update({
+        where: {
+          email: adminData.email,
+        },
+        data: {
+          emailVerified: true,
+        },
+      });
+      console.log("✅ --> Admin Successfully Created and Verified <--");
+    } else {
+      const errorData = await registerAdmin.json();
+      console.error("❌ Failed to register admin via API:", errorData);
     }
-
-    console.log("--> Admin Successfully Created <--");
-
   } catch (error) {
-    console.log(error);
+    console.error("❌ An unexpected error occurred during seeding:", error);
+  } finally {
+    // Disconnect Prisma after script completes
+    await prisma.$disconnect();
   }
 }
 

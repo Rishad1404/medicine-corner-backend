@@ -1,24 +1,13 @@
-enum OrderStatus {
-  PLACED
-  PROCESSING
-  SHIPPED
-  DELIVERED
-  CANCELLED
-}
-
 model Order {
   id              String      @id @default(uuid())
   totalAmount     Int
   status          OrderStatus @default(PLACED)
-  shippingAddress String      @db.Text
-
-  customerId String
+  shippingAddress String
+  customerId      String
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  items           OrderItem[]
   customer        User        @relation(fields: [customerId], references: [id])
-
-  items      OrderItem[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 
   @@map("orders")
 }
@@ -28,9 +17,17 @@ model OrderItem {
   quantity   Int
   price      Int
   orderId    String
-  order      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
   medicineId String
   medicine   Medicine @relation(fields: [medicineId], references: [id])
+  order      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
   @@map("order_items")
+}
+
+enum OrderStatus {
+  PLACED
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
 }

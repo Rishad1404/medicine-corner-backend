@@ -13,6 +13,10 @@ const createMedicine = async (data: any, userId: string) => {
 
 const getAllMedicines = async ({
   search,
+  category,
+  minPrice,
+  maxPrice,
+  manufacturer,
   sortBy,
   sortOrder,
   page,
@@ -20,6 +24,10 @@ const getAllMedicines = async ({
   skip
 }: {
   search?: string | undefined;
+  category?: string | undefined;
+  minPrice?: number | undefined;
+  maxPrice?: number | undefined;
+  manufacturer?: string | undefined;
   sortBy: string;
   sortOrder: string;
   page:number,
@@ -55,12 +63,41 @@ const getAllMedicines = async ({
     });
   }
 
+  if (category) {
+    andConditions.push({
+      category: {
+        name: {
+          equals: category,
+          mode: "insensitive",
+        },
+      },
+    });
+  }
+
+  if (manufacturer) {
+    andConditions.push({
+      manufacturer: {
+        contains: manufacturer,
+        mode: "insensitive",
+      },
+    });
+  }
+
+  if (minPrice !== undefined || maxPrice !== undefined) {
+    andConditions.push({
+      price: {
+        ...(minPrice !== undefined && !isNaN(minPrice) ? { gte: minPrice } : {}),
+        ...(maxPrice !== undefined && !isNaN(maxPrice) ? { lte: maxPrice } : {}),
+      },
+    });
+  }
+
   const result = await prisma.medicine.findMany({
 
     take:limit,
     skip,
     where: {
-      AND: andConditions,
+      AND: andConditions.length > 0 ? andConditions : undefined,
     },
     orderBy: {
       [sortBy]: sortOrder,
@@ -69,7 +106,7 @@ const getAllMedicines = async ({
 
   const total=await prisma.medicine.count({
     where:{
-      AND:andConditions
+      AND: andConditions.length > 0 ? andConditions : undefined
     }
   })
 

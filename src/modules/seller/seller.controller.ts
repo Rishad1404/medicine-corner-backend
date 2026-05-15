@@ -44,7 +44,7 @@ const getSellerMedicines = async (
       data: result,
     });
   } catch (error: any) {
-    next();
+    next(error);
   }
 };
 
@@ -65,7 +65,7 @@ const updateOrderStatus = async (
       data: result,
     });
   } catch (err: any) {
-    next();
+    next(err);
   }
 };
 
@@ -84,7 +84,7 @@ const getSellerStats = async (
       data: result,
     });
   } catch (err: any) {
-    next();
+    next(err);
   }
 };
 

@@ -8,8 +8,8 @@ export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
-  baseURL: process.env.BETTER_AUTH_URL || "http://localhost:5000",
-  trustedOrigins: [process.env.APP_URL!],
+  baseURL: (process.env.BETTER_AUTH_URL || "http://localhost:5000") + "/api/auth",
+  trustedOrigins: [process.env.APP_URL!, process.env.PROD_APP_URL!].filter(Boolean),
 
   session: {
     cookieCache: {

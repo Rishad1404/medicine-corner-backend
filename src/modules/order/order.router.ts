@@ -9,6 +9,7 @@ const router=express.Router();
 
 router.post("/",auth(UserRole.CUSTOMER,UserRole.SELLER),orderController.createOrder);
 router.get("/",auth(UserRole.CUSTOMER),orderController.getMyAllOrders);
+router.get("/customer-stats", auth(UserRole.CUSTOMER), orderController.getCustomerStats);
 router.get("/:id",auth(UserRole.CUSTOMER),orderController.getSingleOrder);
 
 router.get("/orders",auth(UserRole.SELLER),sellerController.getSellerOrders);

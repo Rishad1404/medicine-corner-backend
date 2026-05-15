@@ -67,9 +67,25 @@ const getSingleOrder = async (
   }
 };
 
+const getCustomerStats = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = (req as any).user.id;
+    const result = await orderService.getCustomerStats(userId);
+
+    res.status(200).json({
+      success: true,
+      message: "Customer stats fetched",
+      data: result,
+    });
+  } catch (error: any) {
+    next(error);
+  }
+};
+
 export const orderController = {
   createOrder,
   getMyAllOrders,
   getSingleOrder,
-  getAllOrders
+  getAllOrders,
+  getCustomerStats
 };

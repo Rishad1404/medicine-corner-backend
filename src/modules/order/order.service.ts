@@ -107,9 +107,60 @@ const getSingleOrder = async (orderId: string, userId: string) => {
   return result;
 };
 
+const getCustomerStats = async (userId: string) => {
+  const last6Months = Array.from({ length: 6 }, (_, i) => {
+    const d = new Date();
+    d.setMonth(d.getMonth() - i);
+    return d.toISOString().substring(0, 7);
+  }).reverse();
+
+  const spendingTrend = await Promise.all(
+    last6Months.map(async (month) => {
+      const start = new Date(`${month}-01T00:00:00Z`);
+      const end = new Date(start);
+      end.setMonth(end.getMonth() + 1);
+
+      const aggregate = await prisma.order.aggregate({
+        where: {
+          customerId: userId,
+          createdAt: { gte: start, lt: end },
+          status: { not: "CANCELLED" }
+        },
+        _sum: { totalAmount: true }
+      });
+
+      const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      return {
+        month: monthNames[start.getMonth()],
+        amount: aggregate._sum.totalAmount || 0
+      };
+    })
+  );
+
+  const items = await prisma.orderItem.findMany({
+    where: { order: { customerId: userId } },
+    include: { medicine: { include: { category: true } } }
+  });
+
+  const categoryMap: Record<string, number> = {};
+  items.forEach(item => {
+    const cat = item.medicine.category.name;
+    categoryMap[cat] = (categoryMap[cat] || 0) + 1;
+  });
+
+  const totalItems = items.length || 1;
+  const categoryData = Object.entries(categoryMap).map(([name, count]) => ({
+    name,
+    value: Math.round((count / totalItems) * 100)
+  })).sort((a, b) => b.value - a.value).slice(0, 4);
+
+  return { spendingTrend, categoryData };
+};
+
 export const orderService = {
   createOrder,
   getMyAllOrders,
   getSingleOrder,
   getAllOrders,
+  getCustomerStats
 };

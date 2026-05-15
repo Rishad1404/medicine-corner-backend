@@ -7,9 +7,13 @@ function errorHandler(
   res: Response,
   next: NextFunction,
 ) {
+  console.log("--- ERROR DETECTED ---");
+  console.log(err);
+  
   let statusCode = 500;
-  let errorMessage = "Internal Server Error";
+  let errorMessage = err.message || "Internal Server Error";
   let errorDetails = err;
+
 
   // prisma client validation error
   if (err instanceof Prisma.PrismaClientValidationError) {
